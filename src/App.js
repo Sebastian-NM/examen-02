@@ -5,16 +5,11 @@ import Cabecera from "./components/Cabecera";
 import Card from "./components/Card";
 import AppControlPanel from "./components/AppControlPanel";
 import RestartButton from "./components/RestartButton";
-import Body from "./components/Body";
+import Engine from "./components/Engine";
 export default function App() {
-  const reiniciarJuego = () => {
-    console.log("Juego reiniciado");
-    // lógica de reinicio aquí
-  };
   return (
     <div>
       <Cabecera></Cabecera>
-      <Body></Body>
     </div>
   );
 }

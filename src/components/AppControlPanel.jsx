@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import RestartButton from "./RestartButton";
 
 const Panel = styled.div`
   color: #fff;
@@ -31,20 +32,23 @@ const Health = styled.div`
   justify-content: center;
 `;
 
-export default function AppControlPanel() {
+export default function AppControlPanel({ guessedWords, health, restart }) {
   return (
     <Panel>
       <Heading>Panel de Control</Heading>
+      <h2>Vidas:</h2>
+      <Health>
+        <span>{Array(health).fill("❤️").join(" ")}</span>
+      </Health>
 
+      <h2>Parejas encontradas:</h2>
       <List>
-        <li>Opción 1</li>
-        <li>Opción 2</li>
+        {guessedWords.map((word, i) => (
+          <li key={i}>{word}</li>
+        ))}
       </List>
 
-      <Health>
-        {/* Puede reemplazar estos corazones por íconos o componentes */}
-        <span>❤️ ❤️ ❤️</span>
-      </Health>
+      <RestartButton onClick={restart} />
     </Panel>
   );
 }

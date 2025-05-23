@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Card from "./Card";
 import AppControlPanel from "./AppControlPanel";
+import Card from "./Card";
+
+// Contenedores reutilizados
+const MainWrapper = styled.main`
+  display: flex;
+  align-items: center;
+  width: 1000px;
+  justify-content: center;
+  height: 100%;
+`;
 
 const AppCardsWrapper = styled.div`
   width: 500px;
@@ -12,21 +21,13 @@ const AppCardsWrapper = styled.div`
   height: 500px;
 `;
 
-const MainWrapper = styled.main`
-  display: flex;
-  align-items: center;
-  width: 1000px;
-  justify-content: center;
-  height: 100%;
-`;
-
 // API
-async function getRandomWords() {
-  const response = await fetch(
+const getRandomWords = async () => {
+  const res = await fetch(
     "https://random-word.ryanrk.com/api/en/word/random/6"
   );
-  return await response.json();
-}
+  return await res.json();
+};
 
 const shuffle = (array) => {
   return array
@@ -35,100 +36,101 @@ const shuffle = (array) => {
     .map((a) => a.value);
 };
 
-export default function Game() {
+export default function Engine() {
   const [words, setWords] = useState([]);
   const [cards, setCards] = useState([]);
   const [selected, setSelected] = useState([]);
   const [guessed, setGuessed] = useState([]);
   const [health, setHealth] = useState(5);
   const [blocked, setBlocked] = useState(false);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+
+  const initGame = async () => {
+    const data = await getRandomWords();
+    setWords(data);
+    const duplicated = shuffle([...data, ...data]);
+    const formatted = duplicated.map((word, index) => ({
+      id: index,
+      word,
+      flipped: false,
+      guessed: false,
+    }));
+    setCards(formatted);
+    setSelected([]);
+    setSelectedCardIndex(null);
+    setGuessed([]);
+    setHealth(5);
+    setBlocked(false);
+  };
 
   useEffect(() => {
-    async function setup() {
-      const wordsFromAPI = await getRandomWords();
-      setWords(wordsFromAPI);
-      const duplicated = shuffle([...wordsFromAPI, ...wordsFromAPI]);
-      setCards(
-        duplicated.map((word, i) => ({
-          id: i,
-          word,
-          flipped: false,
-          guessed: false,
-        }))
-      );
-      setHealth(5);
-      setGuessed([]);
-      setSelected([]);
-    }
-
-    setup();
+    initGame();
   }, []);
 
-  const handleSelect = (index) => {
+  const handleCardClick = (index) => {
     if (blocked || cards[index].flipped || cards[index].guessed) return;
 
-    const newCards = [...cards];
-    newCards[index].flipped = true;
-    const newSelected = [...selected, { word: newCards[index].word, index }];
+    const updatedCards = [...cards];
+    updatedCards[index].flipped = true;
+    setCards(updatedCards);
 
-    setCards(newCards);
-    setSelected(newSelected);
-    setBlocked(true);
+    if (selected.length === 1) {
+      const [firstWord] = selected;
+      const secondWord = updatedCards[index].word;
 
-    if (newSelected.length === 2) {
-      const [first, second] = newSelected;
-      if (first.word === second.word) {
-        newCards[first.index].guessed = true;
-        newCards[second.index].guessed = true;
-        setGuessed([...guessed, first.word]);
+      if (firstWord === secondWord) {
+        updatedCards[index].guessed = true;
+        updatedCards[selectedCardIndex].guessed = true;
+        setCards(updatedCards);
+        setGuessed((prev) => [...prev, secondWord]);
         setSelected([]);
-        setCards(newCards);
-        setBlocked(false);
+        setSelectedCardIndex(null);
         if (guessed.length + 1 === words.length) {
-          alert("¡Has ganado!");
+          alert(
+            "🎉 Has ganado el juego. Presiona reiniciar para volver a jugar."
+          );
         }
       } else {
+        setBlocked(true);
         setTimeout(() => {
-          newCards[first.index].flipped = false;
-          newCards[second.index].flipped = false;
-          setCards(newCards);
+          updatedCards[index].flipped = false;
+          updatedCards[selectedCardIndex].flipped = false;
+          setCards(updatedCards);
           setSelected([]);
+          setSelectedCardIndex(null);
           setBlocked(false);
           setHealth((prev) => {
-            if (prev - 1 === 0) {
-              alert("Has perdido.");
-              return 0;
+            const next = prev - 1;
+            if (next === 0) {
+              alert("💀 Has perdido el juego. Presiona reiniciar.");
             }
-            return prev - 1;
+            return next;
           });
         }, 1000);
       }
     } else {
-      setBlocked(false);
+      setSelected([updatedCards[index].word]);
+      setSelectedCardIndex(index);
     }
-  };
-
-  const restart = () => {
-    window.location.reload(); // versión simple. Puede mejorar con lógica directa.
   };
 
   return (
     <MainWrapper>
       <AppCardsWrapper>
-        {cards.map((card, index) => (
+        {cards.map((card, i) => (
           <Card
             key={card.id}
             value={card.word}
             flipped={card.flipped || card.guessed}
             guessed={card.guessed}
-            onClick={() => handleSelect(index)}
+            onClick={() => handleCardClick(i)}
           />
         ))}
       </AppCardsWrapper>
       <AppControlPanel
-        health={health}
         guessedWords={guessed}
-        onRestart={restart}
+        health={health}
+        restart={initGame}
       />
     </MainWrapper>
   );
