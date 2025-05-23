@@ -1,10 +1,20 @@
+import React from "react";
 import "./styles.css";
-
+import "./components/Cabecera";
+import Cabecera from "./components/Cabecera";
+import Card from "./components/Card";
+import AppControlPanel from "./components/AppControlPanel";
+import RestartButton from "./components/RestartButton";
+import Body from "./components/Body";
 export default function App() {
+  const reiniciarJuego = () => {
+    console.log("Juego reiniciado");
+    // lógica de reinicio aquí
+  };
   return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
+    <div>
+      <Cabecera></Cabecera>
+      <Body></Body>
     </div>
   );
 }
