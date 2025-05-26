@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const AppCard = styled.div`
+const CardContainer = styled.div`
   width: 100px;
   height: 150px;
   background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
@@ -9,37 +9,19 @@ const AppCard = styled.div`
   transition: all 0.3s;
   margin: 10px;
   position: relative;
-
-  &:hover {
-    box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.3);
-  }
-
-  &.flipped,
-  &.guessed {
-    transform: rotateY(180deg);
-  }
-
-  &.flipped .AppCardValue,
-  &.guessed .AppCardValue {
-    display: block;
-  }
+  transform: ${({ flipped }) => (flipped ? "rotateY(180deg)" : "none")};
 `;
 
-const AppCardStyled = styled.div`
+const CardStyled = styled.div`
   cursor: pointer;
   width: 100px;
   height: 150px;
   background-color: #1a1a1a;
   transition: all 0.2s;
-
-  &:hover {
-    transform: scale(0.98);
-    border-radius: 20px;
-  }
 `;
 
-const AppCardValue = styled.div`
-  display: none;
+const CardValue = styled.div`
+  display: block;
   color: #fff;
   position: absolute;
   top: 50px;
@@ -49,19 +31,13 @@ const AppCardValue = styled.div`
   transform: rotateY(180deg);
 `;
 
-const cardValues = ["A", "B", "C", "D", "A", "B", "C", "D"];
-
-const Body = () => {
+const Card = ({ word, flipped, onClick }) => {
   return (
-    <MainWrapper>
-      <AppCardsWrapper>
-        {cardValues.map((val, index) => (
-          <Card key={index} value={val} flipped={false} guessed={false} />
-        ))}
-      </AppCardsWrapper>
-      <AppControlPanel />
-    </MainWrapper>
+    <CardContainer flipped={flipped} onClick={onClick}>
+      <CardStyled />
+      {flipped && <CardValue>{word}</CardValue>}
+    </CardContainer>
   );
 };
 
-export default Body;
+export default Card;

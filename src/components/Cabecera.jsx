@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const CabeceraWrapper = styled.div`
-  background: #2a7b9b;
+const HeaderWrapper = styled.header`
   background: linear-gradient(
     90deg,
     rgba(42, 123, 155, 1) 0%,
@@ -17,12 +16,10 @@ const CabeceraWrapper = styled.div`
   width: 100%;
 `;
 
-const Cabecera = () => {
-  return (
-    <div>
-      <CabeceraWrapper>Encuentra la pareja</CabeceraWrapper>
-    </div>
-  );
-};
+const Cabecera = () => (
+  <HeaderWrapper>
+    <h1>Encuentra la pareja</h1>
+  </HeaderWrapper>
+);
 
 export default Cabecera;

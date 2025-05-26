@@ -1,15 +1,21 @@
 import React from "react";
-import "./styles.css";
-import "./components/Cabecera";
 import Cabecera from "./components/Cabecera";
-import Card from "./components/Card";
-import AppControlPanel from "./components/AppControlPanel";
-import RestartButton from "./components/RestartButton";
 import Engine from "./components/Engine";
-export default function App() {
-  return (
-    <div>
-      <Cabecera></Cabecera>
-    </div>
-  );
-}
+import styled from "styled-components";
+
+const AppWrapper = styled.div`
+  min-height: 100vh;
+  background: #212121;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const App = () => (
+  <AppWrapper>
+    <Cabecera />
+    <Engine />
+  </AppWrapper>
+);
+
+export default App;
